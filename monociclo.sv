@@ -1,11 +1,11 @@
-`include "PcCounter.sv"
-`include "InstructionMemory.sv"
-`include "registerUnit.sv"
-`include "ImmGen.sv"
-`include "ALU.sv"
-`include "DataMemory.sv"
-`include "branchunit.sv"
-`include "ControlUnit.sv"
+`include "modulos/PcCounter.sv"
+`include "modulos/InstructionMemory.sv"
+`include "modulos/registerUnit.sv"
+`include "modulos/ImmGen.sv"
+`include "modulos/ALU.sv"
+`include "modulos/DataMemory.sv"
+`include "modulos/branchunit.sv"
+`include "modulos/ControlUnit.sv"
 
 module monociclo;
     logic [31:0] pc; //entrada de pc counter

@@ -1,0 +1,104 @@
+$date
+	Mon May 20 15:40:40 2024
+$end
+$version
+	Icarus Verilog
+$end
+$timescale
+	1ps
+$end
+$scope module FE_tb $end
+$var wire 32 ! inst [31:0] $end
+$var reg 32 " Adress [31:0] $end
+$var reg 1 # NextPCSrc $end
+$var reg 1 $ clk $end
+$scope module uut $end
+$var wire 32 % Adress [31:0] $end
+$var wire 1 # NextPCSrc $end
+$var wire 1 $ clk $end
+$var wire 32 & pc_out [31:0] $end
+$var wire 32 ' inst [31:0] $end
+$var reg 32 ( pc [31:0] $end
+$scope module im $end
+$var wire 32 ) Adress [31:0] $end
+$var reg 32 * Inst [31:0] $end
+$upscope $end
+$scope module pcc $end
+$var wire 1 $ clk $end
+$var wire 32 + pc [31:0] $end
+$var reg 32 , pc_out [31:0] $end
+$upscope $end
+$upscope $end
+$upscope $end
+$enddefinitions $end
+$comment Show the parameter values. $end
+$dumpall
+$end
+#0
+$dumpvars
+b0 ,
+b100 +
+b11111110110000010000000100010011 *
+b0 )
+b100 (
+b11111110110000010000000100010011 '
+b0 &
+b0 %
+0$
+0#
+b0 "
+b11111110110000010000000100010011 !
+$end
+#5000
+b1000 (
+b1000 +
+b100000010010000000100011 !
+b100000010010000000100011 '
+b100000010010000000100011 *
+b100 &
+b100 )
+b100 ,
+1$
+#10000
+0$
+#15000
+b1100 (
+b1100 +
+b100100010010001000100011 !
+b100100010010001000100011 '
+b100100010010001000100011 *
+b1000 &
+b1000 )
+b1000 ,
+1$
+#20000
+b1111100 (
+b1111100 +
+0$
+b1111100 "
+b1111100 %
+1#
+#25000
+b1010000010000000100010011 !
+b1010000010000000100010011 '
+b1010000010000000100010011 *
+b1111100 &
+b1111100 )
+b1111100 ,
+1$
+#30000
+b1000 (
+b1000 +
+0$
+b1000 "
+b1000 %
+#35000
+b100100010010001000100011 !
+b100100010010001000100011 '
+b100100010010001000100011 *
+b1000 &
+b1000 )
+b1000 ,
+1$
+#40000
+0$
