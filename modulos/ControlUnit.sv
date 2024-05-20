@@ -1,92 +1,151 @@
 module ControlUnit(
-    input [6:0] opcode,
-    input [2:0] funct3,
-    input [6:0] funct7,
-    output logic AluASrc,
-    output logic AluBSrc,
-    output logic RuWr,
-    output logic [2:0] ImmSrc,
-    output logic [3:0] ALUOp,
-    output logic [4:0] BrOp,
-    output logic DMWr,
-    output logic [2:0] DMCtrl,
-    output logic [1:0] RUDataWrSrc
+	input logic [6:0] opcode,
+	input logic [2:0] function3,
+	input logic [6:0] function7,
+	output logic [3:0] alu_op,
+	output logic [2:0] imm_src,
+	output logic [4:0] bu_op,
+	output logic [2:0] dm_ctrl,
+	output logic [1:0] RU_DM_write_src,
+	output logic RUwrite,
+	output logic dm_wr,
+	output logic alu_a_src,
+	output logic alu_b_src
 );
 
-    always @* begin
-        AluASrc = opcode[6];
-        case (opcode)
-            7'b0110011: begin // instrucciones tipo R
-                AluBSrc = 0;
-                RuWr = 1;
-                ImmSrc = 3'b000; // no se usa
-                ALUOp = {funct7[5],funct3};
-                BrOp = 5'b00000;
-                DMWr = 0;
-                DMCtrl = 3'b000; // no se usa
-                RUDataWrSrc = 2'b00;
-            end
-            7'b0010011: begin // instrucciones tipo I
-                AluBSrc = 1;
-                RuWr = 1;
-                ImmSrc = 3'b000;
-                ALUOp = {1'b0,funct3}; //no hay manera de reconer el srai
-                BrOp = 5'b00000;
-                DMWr = 0;
-                DMCtrl = 3'b000;
-                RUDataWrSrc = 2'b00;
-            end
-            7'b0000011: begin // instrucciones tipo I de carga
-                AluBSrc = 1;
-                RuWr = 1;
-                ImmSrc = 3'b000;
-                ALUOp = 4'b0000;
-                BrOp = 5'b00000;
-                DMWr = 0;
-                DMCtrl = {funct3};
-                RUDataWrSrc = 2'b01;
-            end
-            7'b0100011: begin // instrucciones tipo S
-                AluBSrc = 1;
-                RuWr = 0;
-                ImmSrc = 3'b001;
-                ALUOp = 4'b000;
-                BrOp = 5'b00000;
-                DMWr = 1;
-                DMCtrl = {funct3};
-                RUDataWrSrc = 2'b00; // no se usa
-            end
-            7'b1100011: begin // instrucciones tipo B
-                AluBSrc = 1;
-                RuWr = 0;
-                ImmSrc = 3'b101;
-                ALUOp = 4'b000;
-                BrOp = {2'b01, funct3};
-                DMWr = 0;
-                DMCtrl = 3'b000; // no se usa
-                RUDataWrSrc = 2'b00; // no se usa
-            end
-            7'b1101111: begin // instrucciones tipo JAL
-                AluBSrc = 1;
-                RuWr = 1;
-                ImmSrc = 3'b110;
-                ALUOp = 4'b000;
-                BrOp = 5'b10000;
-                DMWr = 0;
-                DMCtrl = 3'b000; // no se usa
-                RUDataWrSrc = 2'b10;
-            end
-            7'b1100111: begin // instrucciones tipo JALR
-                AluBSrc = 1;
-                RuWr = 1;
-                ImmSrc = 3'b110;
-                ALUOp = 4'b000;
-                BrOp = 5'b10000;
-                DMWr = 0;
-                DMCtrl = 3'b000; // no se usa
-                RUDataWrSrc = 2'b10;
-            end
-    endcase
-end
+parameter R = 7'b0110011;
+parameter I = 7'b0010011;
+parameter L = 7'b0000011;
+parameter S = 7'b0100011;
+parameter B = 7'b1100011;
+parameter LUI = 7'b0110111;
+parameter AUIPC = 7'b0010111;
+parameter J = 7'b1101111;
+parameter JR = 7'b1100111;
 
+
+
+always@(*)
+	case (opcode)
+		R: begin
+				RUwrite = 1'b1;
+				imm_src = 3'bxxx;
+				bu_op = 5'b00xxx;
+				alu_op = {function7[5], function3};
+				dm_ctrl = 3'bxxx;
+				dm_wr = 1'b0;
+				RU_DM_write_src = 2'b00;
+				alu_a_src = 1'b0;
+				alu_b_src = 1'b0;
+			end
+		I:	begin
+				RUwrite = 1'b1;
+				imm_src = 3'b000;
+				bu_op = 5'b00xxx;
+				if(function3 == 3'b000)
+					alu_op <= {function7[5], function3};
+				else
+					alu_op <= {1'b0, function3};
+				dm_ctrl = 3'bxxx;
+				dm_wr = 1'b0;
+				RU_DM_write_src = 2'b00;
+				alu_a_src = 1'b0;
+				alu_b_src = 1'b1;
+			end
+		L:	begin
+				RUwrite = 1'b1;
+				imm_src = 3'b000;
+				bu_op = 5'b00xxx;
+				alu_op = 4'b0000;
+				dm_ctrl = function3;
+				dm_wr = 1'b0;
+				RU_DM_write_src = 2'b01;
+				alu_a_src = 1'b0;
+				alu_b_src = 1'b1;
+			end
+		S: 	begin
+				RUwrite = 1'b0;
+				imm_src = 3'b001;
+				bu_op = 5'b00xxx;
+				alu_op = 4'b0000;
+				dm_ctrl = function3;
+				dm_wr = 1'b1;
+				RU_DM_write_src = 2'b01;
+				alu_a_src = 1'b0;
+				alu_b_src = 1'b1;
+			end
+			
+
+		B:	begin
+				RUwrite = 1'b0;
+				imm_src = 3'b101;
+				bu_op = { 2'b01, function3 };
+				alu_op = 4'b0000;
+				dm_ctrl = 3'bxxx;
+				dm_wr = 1'b0;
+				RU_DM_write_src = 2'bxx;
+				alu_a_src = 1'b1;
+				alu_b_src = 1'b1;
+			end
+		LUI: begin
+			RUwrite = 1'b1;
+			imm_src = 3'b010;
+			bu_op = 5'b00xxx;
+			alu_op = 4'b1111;
+			dm_ctrl = 3'bxxx;
+			dm_wr = 1'b0;
+			RU_DM_write_src = 2'b00;
+			alu_a_src = 1'bx;
+			alu_b_src = 1'b1;
+		end
+
+		AUIPC:
+			begin
+				RUwrite = 1'b1;
+				imm_src = 3'b010;
+				bu_op = 5'b00xxx;
+				alu_op = 4'b0000;
+				dm_ctrl = 3'bxxx;
+				dm_wr = 1'b0;
+				RU_DM_write_src = 2'b00;
+				alu_a_src = 1'b1;
+				alu_b_src = 1'b1;
+			end
+
+		J:	begin
+				RUwrite = 1'b1;
+				imm_src = 3'b110;
+				bu_op = 5'b1xxxx;
+				alu_op = 4'b0000;
+				dm_ctrl = 3'bxxx;
+				dm_wr = 1'b0;
+				RU_DM_write_src = 2'b10;
+				alu_a_src = 1'b1;
+				alu_b_src = 1'b1;
+			end
+
+		JR:	begin
+				RUwrite = 1'b1;
+				imm_src = 3'b000;
+				bu_op = 5'b1xxxx;
+				alu_op = 4'b0000;
+				dm_ctrl = 3'bxxx;
+				dm_wr = 1'b0;
+				RU_DM_write_src = 2'b10;
+				alu_a_src = 1'b1;
+				alu_b_src = 1'b1;
+			end
+
+		default: begin
+				RUwrite = 1'b0;
+				imm_src = 3'bxxx;
+				bu_op = 5'b00xxx;
+				alu_op = 4'bxxxx;
+				dm_ctrl = 3'bxxx;
+				dm_wr = 1'b0;
+				RU_DM_write_src = 2'bxx;
+				alu_a_src = 1'bx;
+				alu_b_src = 1'bx;
+			end
+	endcase
 endmodule
