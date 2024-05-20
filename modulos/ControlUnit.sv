@@ -29,10 +29,10 @@ always@(*)
 	case (opcode)
 		R: begin
 				RuWr = 1'b1;
-				ImmSrc = 3'bxxx;
-				BrOp = 5'b00xxx;
+				ImmSrc = 3'b000; // no se usa
+				BrOp = 5'b00000;
 				ALUOp = {funct7[5], funct3};
-				DMCtrl = 3'bxxx;
+				DMCtrl = 3'b000; // no se usa
 				DMWr = 1'b0;
 				RUDataWrSrc = 2'b00;
 				AluASrc = 1'b0;
@@ -41,12 +41,12 @@ always@(*)
 		I:	begin
 				RuWr = 1'b1;
 				ImmSrc = 3'b000;
-				BrOp = 5'b00xxx;
+				BrOp = 5'b00000;
 				if(funct3 == 3'b000)
 					ALUOp <= {funct7[5], funct3};
 				else
 					ALUOp <= {1'b0, funct3};
-				DMCtrl = 3'bxxx;
+				DMCtrl = 3'b000; // no se usa
 				DMWr = 1'b0;
 				RUDataWrSrc = 2'b00;
 				AluASrc = 1'b0;
@@ -55,7 +55,7 @@ always@(*)
 		L:	begin
 				RuWr = 1'b1;
 				ImmSrc = 3'b000;
-				BrOp = 5'b00xxx;
+				BrOp = 5'b00000;
 				ALUOp = 4'b0000;
 				DMCtrl = funct3;
 				DMWr = 1'b0;
@@ -66,7 +66,7 @@ always@(*)
 		S: 	begin
 				RuWr = 1'b0;
 				ImmSrc = 3'b001;
-				BrOp = 5'b00xxx;
+				BrOp = 5'b00000;
 				ALUOp = 4'b0000;
 				DMCtrl = funct3;
 				DMWr = 1'b1;
@@ -81,21 +81,21 @@ always@(*)
 				ImmSrc = 3'b101;
 				BrOp = { 2'b01, funct3 };
 				ALUOp = 4'b0000;
-				DMCtrl = 3'bxxx;
+				DMCtrl = 3'b000; // no se usa
 				DMWr = 1'b0;
-				RUDataWrSrc = 2'bxx;
+				RUDataWrSrc = 2'b00; // no se usa
 				AluASrc = 1'b1;
 				AluBSrc = 1'b1;
 			end
 		LUI: begin
 			RuWr = 1'b1;
 			ImmSrc = 3'b010;
-			BrOp = 5'b00xxx;
+			BrOp = 5'b00000;
 			ALUOp = 4'b1111;
-			DMCtrl = 3'bxxx;
+			DMCtrl = 3'b000; // no se usa
 			DMWr = 1'b0;
 			RUDataWrSrc = 2'b00;
-			AluASrc = 1'bx;
+			AluASrc = 1'b0; // no se usa
 			AluBSrc = 1'b1;
 		end
 
@@ -103,9 +103,9 @@ always@(*)
 			begin
 				RuWr = 1'b1;
 				ImmSrc = 3'b010;
-				BrOp = 5'b00xxx;
+				BrOp = 5'b00000;
 				ALUOp = 4'b0000;
-				DMCtrl = 3'bxxx;
+				DMCtrl = 3'b000; // no se usa
 				DMWr = 1'b0;
 				RUDataWrSrc = 2'b00;
 				AluASrc = 1'b1;
@@ -115,9 +115,9 @@ always@(*)
 		J:	begin
 				RuWr = 1'b1;
 				ImmSrc = 3'b110;
-				BrOp = 5'b1xxxx;
+				BrOp = 5'b10000;
 				ALUOp = 4'b0000;
-				DMCtrl = 3'bxxx;
+				DMCtrl = 3'b000; // no se usa
 				DMWr = 1'b0;
 				RUDataWrSrc = 2'b10;
 				AluASrc = 1'b1;
@@ -127,9 +127,9 @@ always@(*)
 		JR:	begin
 				RuWr = 1'b1;
 				ImmSrc = 3'b000;
-				BrOp = 5'b1xxxx;
+				BrOp = 5'b10000;
 				ALUOp = 4'b0000;
-				DMCtrl = 3'bxxx;
+				DMCtrl = 3'b000; // no se usa
 				DMWr = 1'b0;
 				RUDataWrSrc = 2'b10;
 				AluASrc = 1'b1;
@@ -137,15 +137,15 @@ always@(*)
 			end
 
 		default: begin
-				RuWr = 1'b0;
-				ImmSrc = 3'bxxx;
-				BrOp = 5'b00xxx;
-				ALUOp = 4'bxxxx;
-				DMCtrl = 3'bxxx;
+				RuWr = 1'b1;
+				ImmSrc = 3'b000; // no se usa
+				BrOp = 5'b00000; 
+				ALUOp = 4'b0000; 
+				DMCtrl = 3'b000;
 				DMWr = 1'b0;
-				RUDataWrSrc = 2'bxx;
-				AluASrc = 1'bx;
-				AluBSrc = 1'bx;
+				RUDataWrSrc = 2'b00;
+				AluASrc = 1'b0;
+				AluBSrc = 1'b0;
 			end
 	endcase
 endmodule

@@ -5,47 +5,46 @@
 
 module DE(
     input logic clk,
-    input logic [31:0] inst,
-    output logic [31:0] ru1,
-    output logic [31:0] ru2,
-    output logic [31:0] ImmExt,
-    output logic AluASrc,
-    output logic AluBSrc,
-    output logic RuWr,
-    output logic DMWr,
-    output logic [1:0] RUDataWrSrc,
-    output logic [2:0] ImmSrc,
-    output logic [3:0] AluOp,
-    output logic [4:0] BrOp,
-    output logic [2:0] DMCtrl
+    input logic [31:0] inst_de,
+    input logic [31:0] muxData, //entrada de DataWrite en la register unit salida de writeback
+    input logic RuWr_wb, //de writeback stage
+    output logic [31:0] ru1, //salida de register unit
+    output logic [31:0] ru2, //salida de register unit
+    output logic [31:0] ImmExt, //salida de ImmGen
+    output logic AluASrc, //salida de control unit
+    output logic AluBSrc, //salida de control unit
+    output logic RuWr, //salida de control unit
+    output logic DMWr, //salida de control unit
+    output logic [1:0] RUDataWrSrc, //salida de control unit
+    output logic [3:0] AluOp, //salida de control unit
+    output logic [4:0] BrOp, //salida de control unit
+    output logic [2:0] DMCtrl //salida de control unit
 );
 
-    // Señales de control y salidas de control unit
-    logic AluASrc, AluBSrc, RuWr, DMWr;
-    logic [1:0] RUDataWrSrc;
-    logic [2:0] ImmSrc, DMCtrl;
-    logic [3:0] AluOp;
-    logic [4:0] BrOp;
+    logic [2:0] ImmSrc; //salida de control unit  se usa en esta etapa
 
     // Instancias de los módulos
     registerUnit ru(
         .RuDataWrite(muxData),
-        .rd(inst[11:7]),
-        .rs1(inst[19:15]),
-        .rs2(inst[24:20]),
+        .rd(inst_de[11:7]),
+        .rs1(inst_de[19:15]),
+        .rs2(inst_de[24:20]),
         .clk(clk),
-        .Ruwr(RuWr),
+        .Ruwr(RuWr_wb),
         .Ru1(ru1),
         .Ru2(ru2)
     );
+
     ImmGen imm(
-        .inst(inst),
+        .Inst(inst_de[31:7]),
+        .ImmScr(ImmSrc),
         .ImmExt(ImmExt)
     );
+
     ControlUnit cu(
-        .opcode(inst[6:0]),
-        .funct3(inst[14:12]),
-        .funct7(inst[31:25]),
+        .opcode(inst_de[6:0]),
+        .funct3(inst_de[14:12]),
+        .funct7(inst_de[31:25]),
         .ALUOp(AluOp),
         .ImmSrc(ImmSrc),
         .BrOp(BrOp),
@@ -56,3 +55,5 @@ module DE(
         .AluASrc(AluASrc),
         .AluBSrc(AluBSrc)
     );
+
+endmodule
