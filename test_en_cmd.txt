@@ -1,0 +1,2 @@
+iverilog -g2012 -o salida -s monociclo monociclo.sv
+vvp salida
