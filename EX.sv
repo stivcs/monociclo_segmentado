@@ -20,7 +20,6 @@ module EX(
     input logic [4:0] rd_wb,
     input logic RuWr_me,
     input logic RuWr_wb,
-    input logic [31:0] alu_out_me,
     output logic [31:0] alu_out,
     output logic NextPCSrc
 

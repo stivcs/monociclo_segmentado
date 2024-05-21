@@ -7,11 +7,10 @@ module FE(
     input logic clk,
     input logic NextPCSrc,
     input logic [31:0] Adress,
-    output logic [31:0] inst
+    input logic [31:0] pc,
+    output logic [31:0] inst,
+    output logic [31:0] pc_out
 );
-    logic [31:0] pc; //entrada de pc counter
-    logic [31:0] pc_out; //salida de pc counter
-
     // Instancias de los módulos
     PcCounter pcc(
         .clk(clk),
