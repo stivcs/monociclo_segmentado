@@ -18,7 +18,10 @@ module DE(
     output logic [1:0] RUDataWrSrc, //salida de control unit
     output logic [3:0] AluOp, //salida de control unit
     output logic [4:0] BrOp, //salida de control unit
-    output logic [2:0] DMCtrl //salida de control unit
+    output logic [2:0] DMCtrl, //salida de control unit
+    output logic [4:0] rs1_de,
+    output logic [4:0] rs2_de,
+    output logic [4:0] rd_de
 );
 
     logic [2:0] ImmSrc; //salida de control unit  se usa en esta etapa
