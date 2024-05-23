@@ -10,11 +10,23 @@
 `include "ME.sv"
 `include "WB.sv"
 `include "registros/register32.sv"
+`include "registros/controlRegister.sv"
+`include "registros/register5.sv"
+
 
 module top_level;
     //cables
-    input logic clk,NextPCSrc;
-    input logic [31:0] Adress,pc,inst,pc_out;
+    logic clk,NextPCSrc;
+    logic [31:0] Adress,pc,inst,pc_out;
+    logic [3:0] ALUOp_de;
+	logic [4:0] BrOp_de;
+	logic [2:0] DMCtrl_de;
+	logic [1:0] RUDataWrSrc_de;
+	logic RuWr_de;
+	logic DMWr_de;
+	logic AluASrc_de;
+	logic AluBSrc_de;
+    logic [2:0] ImmSrc_de;
     //instancia de los modulos
     FE fetch(
         .clk(clk),
@@ -24,6 +36,22 @@ module top_level;
         .inst(),
         .pc_out()
     );
+    //registros
+    register32 PcInc_de(
+        .clk(clk),
+        .entrada(),
+        .salida()
+    );
+    register32 Pc_o_de(  //pc_de
+        .clk(clk),
+        .entrada(),
+        .salida()
+    );
+    register32 Inst_de(
+        .clk(clk),
+        .entrada(),
+        .salida()
+    );
     DE decode(
         .clk(clk),
         .inst_de(),
@@ -32,18 +60,49 @@ module top_level;
         .ru1(), 
         .ru2(), 
         .ImmExt(), 
-        .AluASrc(), 
-        .AluBSrc(), 
-        .RuWr(), 
-        .DMWr(), 
-        .RUDataWrSrc(), 
-        .AluOp(),
-        .BrOp(), 
-        .DMCtrl(), 
-        .rs1_de(),
-        .rs2_de(),
-        .rd_de()
+        .AluASrc(AluASrc_de), 
+        .AluBSrc(AluBSrc_de), 
+        .RuWr(RuWr_de), 
+        .DMWr(DMWr_de), 
+        .RUDataWrSrc(RUDataWrSrc_de), 
+        .AluOp(ALUOp_de),
+        .BrOp(BrOp_de), 
+        .DMCtrl(DMCtrl_de), 
+        .rs1_de(rs1_de),
+        .rs2_de(rs2_de),
+        .rd_de(rd_de)
     );
+    controlRegister_de cr_ex(
+    .clk(clk),
+    .ALUOp_de(ALUOp_de),
+	.BrOp_de(BrOp_de),
+	.DMCtrl_de(DMCtrl_de),
+	.RUDataWrSrc_de()RUDataWrSrc_de,
+	.RuWr_de(RuWr_de),
+	.DMWr_de(DMWr_de),
+	.AluASrc_de(AluASrc_de),
+	.AluBSrc_de(AluBSrc_de),
+    .ALUOp_ex(AluOp_ex),
+	.BrOp_ex(BrOp_ex),
+	.DMCtrl_ex(DMCtrl_ex),
+	.RUDataWrSrc_ex(RUDataWrSrc_ex),
+	.RuWr_ex(RuWr_ex),
+	.DMWr_ex(DMWr_ex),
+	.AluASrc_ex(AluASrc_ex),
+	.AluBSrc_ex(AluBSrc_ex)
+     );
+    register5 rs1_ex(
+        .clk(clk),
+        .entrada(),
+        .salida()
+    );
+    register5 rs2_ex(
+        .clk(clk),
+        .entrada(),
+        .salida()
+    );
+    
+
     EX execute(
         .clk(clk),
         .pc_ex(),
@@ -95,5 +154,26 @@ module top_level;
         .entrada(),
         .salida()
     );
+    register32 PcInc_ex(
+        .clk(clk),
+        .entrada(),
+        .salida()
+    );
+    register32 Pc_o_ex(  //pc_de
+        .clk(clk),
+        .entrada(),
+        .salida()
+    );
+    register32 PcInc_me(
+        .clk(clk),
+        .entrada(),
+        .salida()
+    );
+    register32 PcInc_wb(
+        .clk(clk),
+        .entrada(),
+        .salida()
+    );
+    
 
 endmodule
