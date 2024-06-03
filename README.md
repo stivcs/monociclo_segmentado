@@ -13,9 +13,3 @@ Un monociclo segmentado en RISC-V 32 es un tipo de arquitectura de procesador qu
 
 - [@stivcs](https://www.github.com/stivcs)
 
-
-## Used By
-
-Este proyecto se utilizo para el curso de arquitectura de computadores
-
-
