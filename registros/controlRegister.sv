@@ -1,5 +1,7 @@
 module controlRegister_de(
     input logic clk,
+	input logic clr,
+	input logic NextPCSrc,
     input logic [3:0] ALUOp_de,
 	input logic [4:0] BrOp_de,
 	input logic [2:0] DMCtrl_de,
@@ -19,13 +21,25 @@ module controlRegister_de(
 );
 
     always_ff @(posedge clk) begin
-        ALUOp_ex <= ALUOp_de;
-        BrOp_ex <= BrOp_de;
-        DMCtrl_ex <= DMCtrl_de;
-        RUDataWrSrc_ex <= RUDataWrSrc_de;
-        RuWr_ex <= RuWr_de;
-        DMWr_ex <= DMWr_de;
-        AluASrc_ex <= AluASrc_de;
-        AluBSrc_ex <= AluBSrc_de;
+       if (clr || NextPCSrc) begin  // se genera el nop
+			ALUOp_ex <= 4'b0000;
+			BrOp_ex <= 5'b00000;
+			DMCtrl_ex <= 3'b000;
+			RUDataWrSrc_ex <= 2'b00;
+			RuWr_ex <= 1'b0;
+			DMWr_ex <= 1'b0;
+			AluASrc_ex <= 1'b0;
+			AluBSrc_ex <= 1'b1;
+	   end
+	   else begin
+		 	ALUOp_ex <= ALUOp_de;	
+			BrOp_ex <= BrOp_de;
+			DMCtrl_ex <= DMCtrl_de;
+			RUDataWrSrc_ex <= RUDataWrSrc_de;
+			RuWr_ex <= RuWr_de;
+			DMWr_ex <= DMWr_de;
+			AluASrc_ex <= AluASrc_de;
+			AluBSrc_ex <= AluBSrc_de;
+	   end
     end
 endmodule

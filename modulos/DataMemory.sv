@@ -13,7 +13,7 @@ module DataMemory(Address, DataWr, DMWr, DMCtrl, DataRd);
     
     always @* begin
         // en 1 escribe en memoria
-        if (DMWr == 1) begin
+        if (DMWr) begin
             case (DMCtrl)
                 3'b000: begin // B 8 bits
                     memoria[Address] <= DataWr[7:0];
