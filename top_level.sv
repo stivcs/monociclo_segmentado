@@ -17,7 +17,8 @@
 module top_level;
     //cables
     logic clk,NextPCSrc;
-    logic [31:0] Adress,pc,inst,pc_out;
+    logic [31:0] pc_int,inst,pc_out,pcInc,alu_out; //cables de fetch
+    logic [31:0] pcInc_de,pc_de,inst_de; //cables de los registros de decode
     logic [3:0] ALUOp_de;
 	logic [4:0] BrOp_de;
 	logic [2:0] DMCtrl_de;
@@ -30,36 +31,39 @@ module top_level;
     //instancia de los modulos
     FE fetch(
         .clk(clk),
-        .NextPCSrc(),
-        .Adress(),
-        .pc(),
-        .inst(),
-        .pc_out()
+        .pc(pc_int),
+        .inst(inst),
+        .pc_out(pc_out)
     );
     //registros
     register32 PcInc_de(
         .clk(clk),
-        .entrada(),
-        .salida()
+        .entrada(pcInc),
+        .salida(pcInc_de)
     );
     register32 Pc_o_de(  //pc_de
         .clk(clk),
-        .entrada(),
-        .salida()
+        .entrada(pc_out),
+        .salida(pc_de)
     );
     register32 Inst_de(
         .clk(clk),
-        .entrada(),
-        .salida()
+        .entrada(inst),
+        .salida(inst_de)
     );
+    //etapa de fecth cableada
     DE decode(
         .clk(clk),
         .inst_de(),
         .muxData(), 
-        .RuWr_wb(), 
+        .RuWr_wb(),
+        .DMRd_ex(), 
         .ru1(), 
         .ru2(), 
-        .ImmExt(), 
+        .ImmExt(),
+        .clr(),
+        .pc_inc_de(),
+        .pc_fe(), 
         .AluASrc(AluASrc_de), 
         .AluBSrc(AluBSrc_de), 
         .RuWr(RuWr_de), 
@@ -121,7 +125,7 @@ module top_level;
         .rd_wb(),
         .RuWr_me(),
         .RuWr_wb(),
-        .alu_out(),
+        .alu_out(alu_out),
         .NextPCSrc()
     );
     ME memory(
@@ -175,5 +179,16 @@ module top_level;
         .salida()
     );
     
+    always @* begin
+        pcInc = pc_out + 4;
+        //mux de fetch
+        if (NextPCSrc == 1) begin
+            pc_int = pcInc;
+        end
+        else begin
+            pc_int = alu_out;
+        end
+
+    end
 
 endmodule

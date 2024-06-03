@@ -2,15 +2,20 @@
 `include "modulos/registerUnit.sv"
 `include "modulos/ImmGen.sv"
 `include "modulos/ControlUnit.sv"
+`include "modulos/HazardDetectionUnit.sv"
 
 module DE(
     input logic clk,
     input logic [31:0] inst_de,
     input logic [31:0] muxData, //entrada de DataWrite en la register unit salida de writeback
     input logic RuWr_wb, //de writeback stage
+    input logic DMRd_ex, //si va a leer en la data memory
     output logic [31:0] ru1, //salida de register unit
     output logic [31:0] ru2, //salida de register unit
     output logic [31:0] ImmExt, //salida de ImmGen
+    output logic clr, //salida de HazardDetectionUnit el clear de el registro de la unidad de registros
+    output logic pc_inc_de, //salida de HazardDetectionUnit
+    output logic pc_fe, //salida de HazardDetectionUnit
     output logic AluASrc, //salida de control unit
     output logic AluBSrc, //salida de control unit
     output logic RuWr, //salida de control unit
@@ -25,7 +30,16 @@ module DE(
 );
 
     logic [2:0] ImmSrc; //salida de control unit  se usa en esta etapa
-
+    HazardDetectionUnit hdu(
+        .rs1_de(inst_de[19:15]),
+        .rs2_de(inst_de[24:20]),
+        .rd_ex(rs1_de),
+        .DMRd_ex(),
+        .clk(clk),
+        .clr(clr),
+        .pc_inc_de(pc_inc_de), 
+        .pc_fe(pc_fe) 
+    );
     // Instancias de los módulos
     registerUnit ru(
         .RuDataWrite(muxData),
