@@ -13,3 +13,9 @@ Un monociclo segmentado en RISC-V 32 es un tipo de arquitectura de procesador qu
 
 - [@stivcs](https://www.github.com/stivcs)
 
+## Simulacion
+Para probarlo es necesario tener icarus verilog instalado
+```bash
+iverilog -g2012 -o salida -s monociclo monociclo.sv
+vvp salida
+
