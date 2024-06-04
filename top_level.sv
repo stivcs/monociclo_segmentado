@@ -179,9 +179,9 @@ module top_level;
         .alu_out_me(),
         .rs1_ex(rs1_ex),
         .rs2_ex(rs2_ex),
-        .rd_me(), //!falta
+        .rd_me(rd_me), 
         .rd_wb(), //!falta
-        .RuWr_me(), //!falta
+        .RuWr_me(RuWr_me), 
         .RuWr_wb(), //!falta
         .alu_out(alu_out),
         .NextPCSrc(NextPCSrc)
@@ -223,6 +223,26 @@ module top_level;
         .DMWr_me(DMWr_me),
         .DMCtrl_me(DMCtrl_me),
         .DataRd_me(dataRd)
+    );
+    register32 alu_out_wb(
+        .clk(clk),
+        .entrada(alu_out),
+        .salida(alu_out_wb)
+    );
+    register32 pc_wb(
+        .clk(clk),
+        .entrada(pc_ex),
+        .salida(pc_wb)
+    );
+    register32 DataRd_wb(
+        .clk(clk),
+        .entrada(dataRd),
+        .salida(DataRd_wb)
+    );
+    register5 rd_wb(
+        .clk(clk),
+        .entrada(rd_me),
+        .salida(rd_wb)
     );
     WB writeback(
     .alu_out_wb(),
