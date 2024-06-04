@@ -14,6 +14,7 @@
 `include "registros/controlRegister.sv"
 `include "registros/register5.sv"
 `include "registros/cr_me.sv"
+`include "registros/cr_wb.sv"
 
 
 module top_level;
@@ -52,6 +53,11 @@ module top_level;
     logic DMWr_me;
     logic [31:0] dataRd; //cable de data memory
     //cables de writeback
+    logic [31:0] alu_out_wb,pc_wb,DataRd_wb; //cables de los registros de writeback
+    logic [1:0] RUDataWrSrc_wb;
+    logic RuWr_wb;
+    //cables de mux de datos
+    logic [31:0] muxData_wb; //cable de mux de datos de writeback
     //instancia de los modulos
     FE fetch(
         .clk(clk),
@@ -82,9 +88,9 @@ module top_level;
     DE decode(
         .clk(clk),
         .inst_de(inst_de),
-        .muxData(),  // lo que se escribe en la unidad de registros o datawrite  //!falta
-        .RuWr_wb(),  // de writeback stage de la unidad de control si se escribe o no //!falta
-        .DMRd_ex(DMWr_ex), // si se va a leer en la data memory //? no se si es correcto revisar
+        .muxData(muxData_wb),  // lo que se escribe en la unidad de registros o datawrite  
+        .RuWr_wb(),  // de writeback stage de la unidad de control si se escribe o no 
+        .DMRd_ex(DMWr_ex), // si se va a leer en la data memory 
         .ru1(ru1), 
         .ru2(ru2), 
         .ImmExt(ImmExt),
@@ -175,14 +181,14 @@ module top_level;
         .AluBSrc_ex(AluBSrc_ex),
         .AluOp_ex(AluOp_ex),
         .BrOp_ex(BrOp_ex),
-        .muxData(), //mux de datos de la unidad de registros o datawrite //!falta
+        .muxData(muxData_wb), //mux de datos de la unidad de registros o datawrite 
         .alu_out_me(),
         .rs1_ex(rs1_ex),
         .rs2_ex(rs2_ex),
         .rd_me(rd_me), 
-        .rd_wb(), //!falta
+        .rd_wb(rd_wb), 
         .RuWr_me(RuWr_me), 
-        .RuWr_wb(), //!falta
+        .RuWr_wb(RuWr_wb), 
         .alu_out(alu_out),
         .NextPCSrc(NextPCSrc)
     );
@@ -224,6 +230,13 @@ module top_level;
         .DMCtrl_me(DMCtrl_me),
         .DataRd_me(dataRd)
     );
+    controlRegister_wb cr_wb(
+        .clk(clk),
+        .RUDataWrSrc_me(RUDataWrSrc_me),
+        .RuWr_me(RuWr_me),
+        .RUDataWrSrc_wb(RUDataWrSrc_wb),
+        .RuWr_wb(RuWr_wb)
+    );
     register32 alu_out_wb(
         .clk(clk),
         .entrada(alu_out),
@@ -245,11 +258,11 @@ module top_level;
         .salida(rd_wb)
     );
     WB writeback(
-    .alu_out_wb(),
-    .pc4_wb(),
-    .DataRd_wb(),
-    .RUDataWrSrc_wb(),
-    .muxData_wb()
+    .alu_out_wb(alu_out_wb),
+    .pc4_wb(pc_wb),
+    .DataRd_wb(DataRd_wb),
+    .RUDataWrSrc_wb(RUDataWrSrc_wb),
+    .muxData_wb(muxData_wb)
     );
     
     always @* begin
@@ -261,7 +274,7 @@ module top_level;
         else begin
             pc_int = alu_out;
         end
-
+    
     end
 
 endmodule

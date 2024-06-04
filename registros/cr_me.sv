@@ -12,14 +12,10 @@ module controlRegister_ex(
 
     always_ff @(posedge clk) begin
           
-        ALUOp_me <= ALUOp_ex;	
-        BrOp_me <= BrOp_ex;
         DMCtrl_me <= DMCtrl_ex;
         RUDataWrSrc_me <= RUDataWrSrc_ex;
         RuWr_me <= RuWr_ex;
         DMWr_me <= DMWr_ex;
-        AluASrc_me <= AluASrc_ex;
-        AluBSrc_me <= AluBSrc_ex;
 
     end
 endmodule
