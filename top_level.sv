@@ -13,6 +13,7 @@
 `include "registros/pcinc_re.sv" // registro con eneble de pc_inc
 `include "registros/controlRegister.sv"
 `include "registros/register5.sv"
+`include "registros/cr_me.sv"
 
 
 module top_level;
@@ -120,17 +121,17 @@ module top_level;
     register32 Ru1_ex(
         .clk(clk),
         .entrada(ru1),
-        .salida()
+        .salida(ru1_ex)
     );
     register32 Ru2_ex(
         .clk(clk),
         .entrada(ru2),
-        .salida()
+        .salida(ru2_ex)
     );
     register32 ImmExt_ex(
         .clk(clk),
         .entrada(ImmExt),
-        .salida()
+        .salida(ImmExt_ex)
     );
     register5 rs1_ex(
         .clk(clk),
@@ -150,24 +151,40 @@ module top_level;
     
     EX execute(
         .clk(clk),
-        .pc_ex(),
-        .ru1_ex(),
-        .ru2_ex(),
-        .ImmExt_ex(),
-        .AluASrc_ex(),
-        .AluBSrc_ex(),
-        .AluOp_ex(),
-        .BrOp_ex(),
-        .muxData(),
+        .pc_ex(pc_ex),
+        .ru1_ex(ru1_ex),
+        .ru2_ex(ru2_ex),
+        .ImmExt_ex(ImmExt_ex),
+        .AluASrc_ex(AluASrc_ex),
+        .AluBSrc_ex(AluBSrc_ex),
+        .AluOp_ex(AluOp_ex),
+        .BrOp_ex(BrOp_ex),
+        .muxData(), //mux de datos de la unidad de registros o datawrite //!falta
         .alu_out_me(),
-        .rs1_ex(),
-        .rs2_ex(),
-        .rd_me(),
-        .rd_wb(),
-        .RuWr_me(),
-        .RuWr_wb(),
+        .rs1_ex(rs1_ex),
+        .rs2_ex(rs2_ex),
+        .rd_me(), //!falta
+        .rd_wb(), //!falta
+        .RuWr_me(), //!falta
+        .RuWr_wb(), //!falta
         .alu_out(alu_out),
-        .NextPCSrc()
+        .NextPCSrc(NextPCSrc)
+    );
+    controlRegister_ex cr_ex(
+    .clk(clk),
+	.DMCtrl_ex(DMCtrl_ex),
+	.RUDataWrSrc_ex(RUDataWrSrc_ex),
+	.RuWr_ex(RuWr_ex),
+	.DMWr_ex(DMWr_ex),
+	.DMCtrl_me(DMCtrl_me),
+	.RUDataWrSrc_me(RUDataWrSrc_me),
+	.RuWr_me(RuWr_me),
+	.DMWr_me(DMWr_me)
+    );
+    register32 PcInc_me(
+        .clk(clk),
+        .entrada(pcInc_ex),
+        .salida(pcInc_me)
     );
     ME memory(
         .alu_out_me(),
