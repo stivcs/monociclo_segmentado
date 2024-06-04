@@ -36,6 +36,22 @@ module top_level;
     logic [2:0] ImmSrc_de;
     //cables de execute
     logic [31:0] pc_ex,ru1_ex,ru2_ex,ImmExt_ex; //cabes de los registros de execute
+    logic [3:0] ALUOp_ex;
+    logic [4:0] BrOp_ex;
+    logic [2:0] DMCtrl_ex;
+    logic [1:0] RUDataWrSrc_ex;
+    logic RuWr_ex;
+    logic DMWr_ex;
+    logic AluASrc_ex;
+    logic AluBSrc_ex;
+    //cables de memory
+    logic [31:0] alu_out_me,ru2_me; //cables de los registros de memory
+    logic [2:0] DMCtrl_me;
+    logic [1:0] RUDataWrSrc_me;
+    logic RuWr_me;
+    logic DMWr_me;
+    logic [31:0] dataRd; //cable de data memory
+    //cables de writeback
     //instancia de los modulos
     FE fetch(
         .clk(clk),
@@ -186,12 +202,27 @@ module top_level;
         .entrada(pcInc_ex),
         .salida(pcInc_me)
     );
+    register32 alu_res_me(
+        .clk(clk),
+        .entrada(alu_out),
+        .salida(alu_out_me)
+    );
+    register32 ru2_me(
+        .clk(clk),
+        .entrada(ru2_ex),
+        .salida(ru2_me)
+    );
+    register5 rd_me(
+        .clk(clk),
+        .entrada(rd_ex),
+        .salida(rd_me)
+    );
     ME memory(
-        .alu_out_me(),
-        .ru2_me(),
-        .DMWr_me(),
-        .DMCtrl_me(),
-        .DataRd_me()
+        .alu_out_me(alu_out_me),
+        .ru2_me(ru2_me),
+        .DMWr_me(DMWr_me),
+        .DMCtrl_me(DMCtrl_me),
+        .DataRd_me(dataRd)
     );
     WB writeback(
     .alu_out_wb(),
@@ -199,42 +230,6 @@ module top_level;
     .DataRd_wb(),
     .RUDataWrSrc_wb(),
     .muxData_wb()
-    );
-    //registros
-    register32 PcInc_de(
-        .clk(clk),
-        .entrada(),
-        .salida()
-    );
-    register32 Pc_o_de(  //pc_de
-        .clk(clk),
-        .entrada(),
-        .salida()
-    );
-    register32 Inst_de(
-        .clk(clk),
-        .entrada(),
-        .salida()
-    );
-    register32 PcInc_ex(
-        .clk(clk),
-        .entrada(),
-        .salida()
-    );
-    register32 Pc_o_ex(  //pc_de
-        .clk(clk),
-        .entrada(),
-        .salida()
-    );
-    register32 PcInc_me(
-        .clk(clk),
-        .entrada(),
-        .salida()
-    );
-    register32 PcInc_wb(
-        .clk(clk),
-        .entrada(),
-        .salida()
     );
     
     always @* begin
