@@ -3,7 +3,7 @@ module controlRegister_wb(
 	input logic [1:0] RUDataWrSrc_me,
 	input logic RuWr_me,
 	output logic [1:0] RUDataWrSrc_wb,
-	output logic RuWr_wb,
+	output logic RuWr_wb
 );
 
     always_ff @(posedge clk) begin

@@ -15,7 +15,7 @@ module registerUnit (
       reg_file[i] = 32'h00000000;
     end
   end
-  always_ff @(posedge clk) begin
+  always_ff @(negedge clk) begin
     //el registro en la posicion 0 siempre es 0
     if (Ruwr && rd != 5'b00000) reg_file[rd] <= RuDataWrite;
   end

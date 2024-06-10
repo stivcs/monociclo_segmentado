@@ -1,7 +1,7 @@
 module pcinc_re(
     input logic clk,
     input logic en,
-    input logic NextPCSrc
+    input logic NextPCSrc,
     input logic [31:0] entrada,
     output logic [31:0] salida
 );

@@ -1,8 +1,4 @@
 //-------------------------------------
-// aqui van tods los registros de las diferentes etapas del procesador
-// en fetch stage falta  los registros de pcInc_de, pc_de y inst_de
-// en decode stage falta los registros de ru1_ex, ru2_ex, ImmExt_ex, AluASrc_ex, AluBSrc_ex, RuWr_ex, DMWr_ex, RUDataWrSrc_ex, AluOp_ex, BrOp_ex, DMCtrl_ex
-//ru2_ex y ru_me esta aca en el top level
 //-------------------------------------
 `include "FE.sv"
 `include "DE.sv"
@@ -19,7 +15,7 @@
 
 module top_level;
     //cables
-    logic clk,NextPCSrc;
+    logic clk = 0,NextPCSrc;
     logic [31:0] pc_int,inst,pc_out,pcInc,alu_out; //cables de fetch
     //cable de decode
     logic [31:0] pcInc_de,pc_de,inst_de; //cables de los registros de decode
@@ -109,14 +105,14 @@ module top_level;
         .rs2_de(rs2_de),
         .rd_de(rd_de)
     );
-    controlRegister_de cr_ex(
+    controlRegister_de cr_de_module(
     .clk(clk),
     .clr(clr),
     .NextPCSrc(NextPCSrc),
     .ALUOp_de(ALUOp_de),
 	.BrOp_de(BrOp_de),
 	.DMCtrl_de(DMCtrl_de),
-	.RUDataWrSrc_de()RUDataWrSrc_de,
+	.RUDataWrSrc_de(RUDataWrSrc_de),
 	.RuWr_de(RuWr_de),
 	.DMWr_de(DMWr_de),
 	.AluASrc_de(AluASrc_de),
@@ -150,7 +146,7 @@ module top_level;
         .entrada(ru2),
         .salida(ru2_ex)
     );
-    register32 ImmExt_ex(
+    register32 immext_ex_modulo(
         .clk(clk),
         .entrada(ImmExt),
         .salida(ImmExt_ex)
@@ -192,7 +188,7 @@ module top_level;
         .alu_out(alu_out),
         .NextPCSrc(NextPCSrc)
     );
-    controlRegister_ex cr_ex(
+    controlRegister_ex cr_ex_mo(
     .clk(clk),
 	.DMCtrl_ex(DMCtrl_ex),
 	.RUDataWrSrc_ex(RUDataWrSrc_ex),
@@ -213,12 +209,12 @@ module top_level;
         .entrada(alu_out),
         .salida(alu_out_me)
     );
-    register32 ru2_me(
+    register32 ru2_me_modulo(
         .clk(clk),
         .entrada(ru2_ex),
         .salida(ru2_me)
     );
-    register5 rd_me(
+    register5 rd_me_mo(
         .clk(clk),
         .entrada(rd_ex),
         .salida(rd_me)
@@ -237,22 +233,22 @@ module top_level;
         .RUDataWrSrc_wb(RUDataWrSrc_wb),
         .RuWr_wb(RuWr_wb)
     );
-    register32 alu_out_wb(
+    register32 alu_out_wb_mo(
         .clk(clk),
         .entrada(alu_out),
         .salida(alu_out_wb)
     );
-    register32 pc_wb(
+    register32 pc_wb_mo(
         .clk(clk),
         .entrada(pc_ex),
         .salida(pc_wb)
     );
-    register32 DataRd_wb(
+    register32 DataRd_wb_mo(
         .clk(clk),
         .entrada(dataRd),
         .salida(DataRd_wb)
     );
-    register5 rd_wb(
+    register5 rd_wb_mo(
         .clk(clk),
         .entrada(rd_me),
         .salida(rd_wb)
@@ -265,6 +261,19 @@ module top_level;
     .muxData_wb(muxData_wb)
     );
     
+    // Generación de clock
+    always #15 clk = ~clk;
+
+    // Inicialización de señales
+    initial begin
+        $dumpfile("monociclo.vcd");
+        $dumpvars(0, monociclo);
+        pc = 32'h0;
+        #900; // tiempo que se demora en recorrer todas las instrucciones
+        $finish;
+        // Otros valores de señales de entrada necesarios para la simulación
+    end
+
     always @* begin
         pcInc = pc_out + 4;
         //mux de fetch
